@@ -9,9 +9,10 @@ class App extends Component{
   constructor(props){
     super(props);
     this.state = {
-      chats: [],
+      token: '',
     }
     this.registerUser = this.registerUser.bind(this)
+    this.logIn = this.logIn.bind(this)
   }
   // componentDidMount(){
   //   fetch('/api/v1/chats/')
@@ -19,15 +20,14 @@ class App extends Component{
   //   .then(data => this.setState({chats: data}))
   //   .catch(error => console.log('Error:', error));
   // }
-
-  registerUser(event, data){
+  logIn(event, data){
     event.preventDefault();
     const csrftoken = Cookies.get('csrftoken');
-    fetch('/api/v1/rest-auth/registration/', {
+    fetch('/api/v1/rest-auth/login/', {
       method:'POST',
-      headers: {
+      headers:{
         'X-CSRFToken': csrftoken,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     })
@@ -36,10 +36,26 @@ class App extends Component{
     .catch(error => console.log('Error:', error));
   }
 
+  registerUser(event, data){
+    event.preventDefault();
+    const csrftoken = Cookies.get('csrftoken');
+    fetch('/api/v1/rest-auth/registration/', {
+      method:'POST',
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(data => this.setState({token: data}))
+    .catch(error => console.log('Error:', error));
+  }
+
   render(){
     return(
       <div className="form mt-5">
-        <LoginForm registerUser={this.registerUser}/>
+        <LoginForm registerUser={this.registerUser} logIn={this.logIn}/>
       </div>
     )
   }

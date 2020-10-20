@@ -1,3 +1,7 @@
 .Register{
   text-align: center;
 }
+.create-Account-Btn{
+  display: flex;
+  justify-content: space-between;
+}
