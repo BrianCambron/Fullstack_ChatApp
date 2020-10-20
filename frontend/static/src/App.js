@@ -38,7 +38,10 @@ class App extends Component{
       body: JSON.stringify(data),
     })
     .then(response => response.json())
-    .then(data => console.log(data))
+    .then(data => {
+        const chats = [...this.state.chats, data];
+        this.setState({chats})
+    })
     .catch(error => console.log('Error:', error));
   }
 
