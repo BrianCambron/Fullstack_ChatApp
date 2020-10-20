@@ -28,7 +28,7 @@ class ChatForm extends Component {
       <div className="form mt-5" onSubmit={(event) => this.props.postChat(event, this.state)}>
         <form className="col-12 col-md-6">
         <div className="form-group">
-          <label htmlFor="user">Type number between 1-9</label>
+          <label htmlFor="user">Username</label>
           <input type='text' className="form-control" id="user" name="user" value={this.state.user} onChange={this.handleChange}/>
         </div>
           <div className="form-group">
