@@ -9,7 +9,7 @@ class App extends Component{
   constructor(props){
     super(props);
     this.state = {
-      token: '',
+      chats: [],
     }
     this.registerUser = this.registerUser.bind(this)
     this.logIn = this.logIn.bind(this)
@@ -48,7 +48,7 @@ class App extends Component{
       body: JSON.stringify(data),
     })
     .then(response => response.json())
-    .then(data => this.setState({token: data}))
+    .then(data => console.log(data))
     .catch(error => console.log('Error:', error));
   }
 
