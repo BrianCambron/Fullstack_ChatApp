@@ -4,7 +4,7 @@ import './ChatForm.css'
 function Chat(props){
   const chats = props.chats.map(chat => <li className="list-group-item mt-3"key={chat.id}>{chat.message}</li>);
   return(
-    <div>
+    <div className="messages">
      {chats}
     </div>
   )
