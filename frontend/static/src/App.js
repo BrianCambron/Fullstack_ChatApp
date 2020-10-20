@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import LoginForm from './components/LoginForm'
+import RegisterForm from './components/RegisterForm'
 import Cookies from 'js-cookie';
 import './App.css'
 
@@ -10,6 +11,7 @@ class App extends Component{
     super(props);
     this.state = {
       chats: [],
+      display: 'register',
     }
     this.registerUser = this.registerUser.bind(this)
     this.logIn = this.logIn.bind(this)
@@ -53,9 +55,20 @@ class App extends Component{
   }
 
   render(){
+    let html;
+    const display = this.state.display;
+    if(display === 'register'){
+      html = <div className="form"><RegisterForm registerUser={this.registerUser}/></div>
+    } else if(display === 'login') {
+      html = <div className="form"><LoginForm logIn={this.logIn}/></div>
+    }
     return(
-      <div className="form mt-5">
-        <LoginForm registerUser={this.registerUser} logIn={this.logIn}/>
+      <div className="mt-5">
+        {html}
+        <div className="form">
+          <button onClick={() => this.setState({display:'register'})} type='button'className="btn btn-link">Already have an account?</button>
+          <button onClick={() => this.setState({display:'login'})} type='button'className="btn btn-link">Don't have an account?</button>
+        </div>
       </div>
     )
   }
