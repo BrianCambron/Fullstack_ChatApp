@@ -13,17 +13,26 @@ class App extends Component{
     this.state = {
       chats: [],
       display: 'register',
-      isLoggedIn:false,
+      isLoggedIn: Cookies.get('Authorization')? true: false,
     }
     this.registerUser = this.registerUser.bind(this)
     this.logIn = this.logIn.bind(this)
     this.postChat = this.postChat.bind(this)
+    this.logOut = this.logOut.bind(this)
+    this.fetchMessages = this.fetchMessages.bind(this)
   }
   componentDidMount(){
-    fetch('/api/v1/chats/')
-    .then(response => response.json())
-    .then(data => this.setState({chats: data}))
-    .catch(error => console.log('Error:', error));
+    this.fetchMessages();
+    setInterval(this.fetchMessages, 1000);
+  }
+  fetchMessages(){
+    const isLoggedIn = this.state.isLoggedIn;
+    if(isLoggedIn === true){
+      fetch('/api/v1/chats/')
+      .then(response => response.json())
+      .then(data => this.setState({chats: data}))
+      .catch(error => console.log('Error:', error));
+    }
   }
 
   postChat(event, data){
@@ -57,7 +66,10 @@ class App extends Component{
       body: JSON.stringify(data),
     })
     .then(response => response.json())
-    .then(data => {this.setState({isLoggedIn:true})})
+    .then(data => {if(data.key){
+        Cookies.set('Authorization', `Token ${data.key}`);
+        this.setState({isLoggedIn:true})
+      }})
     .catch(error => console.log('Error:', error));
   }
 
@@ -73,11 +85,73 @@ class App extends Component{
       body: JSON.stringify(data),
     })
     .then(response => response.json())
-    .then(data => console.log(data))
+    .then(data => {if(data.key){
+        Cookies.set('Authorization', `Token ${data.key}`);
+        this.setState({isLoggedIn:true})
+      }})
     .catch(error => console.log('Error:', error));
   }
 
+  logOut(){
+    const csrftoken = Cookies.get('csrftoken');
+    fetch('/api/v1/rest-auth/logout/', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {if(data.detail === 'Successfully logged out.'){
+          Cookies.remove('Authorization');
+          this.setState({isLoggedIn:false})
+        }})
+    .catch(error => console.log('Error:', error));
+  }
+
+
+  // async handleLogout(){
+  //   const options = {
+  //     method:'POST',
+  //     headers: {
+  //       'X-CSRFToken': Cookies.get('csrftoken'),
+  //       'Content-Type': 'application/json',
+  //     },
+  //   };
+  //
+  //   const handleError = (err) => console.warn(err);
+  //   const response = await fetch('/api/v1/rest-auth/logout/', options)
+  //   const data = await response.json().catch(handleError)
+  //
+  //   if(data.detail === 'Successfully logged out.'){
+  //     Cookies.remove('Authorization');
+  //   }
+
+
+
+  // async registerUser(e, obj){
+  //   e.preventDefault();
+  //
+  //   const options = {
+  //     method:'POST',
+  //     headers: {
+  //       'X-CSRFToken': Cookies.get('csrftoken'),
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(obj),
+  //   };
+  //
+  //   const handleError = (err) => console.warn(err);
+  //   const response = await fetch('/api/v1/rest-auth/registration/', options)
+  //   const data = await response.json().catch(handleError)
+  //
+  //   if(data.key){
+  //     Cookies.set('Authorization', `Token ${data.key}`);
+  //   }
+  // }
+
   render(){
+     console.log(this.state.isLoggedIn);
     let html;
     const display = this.state.display;
     if(display === 'register'){
@@ -88,7 +162,7 @@ class App extends Component{
     let chat;
     const isLoggedIn = this.state.isLoggedIn;
     if(isLoggedIn === true){
-      chat = <ChatForm chats={this.state.chats} postChat={this.postChat}/>
+      chat = <ChatForm chats={this.state.chats} postChat={this.postChat} logOut={this.logOut}/>
     }
     else {
       chat = ''

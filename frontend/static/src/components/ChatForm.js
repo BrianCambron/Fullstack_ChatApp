@@ -25,12 +25,9 @@ class ChatForm extends Component {
   render(){
     return(
       <React.Fragment>
+      <button onClick={this.props.logOut} type='button'>Log out</button>
       <div className="form mt-5" onSubmit={(event) => this.props.postChat(event, this.state)}>
         <form className="col-12 col-md-6">
-        <div className="form-group">
-          <label htmlFor="user">Username</label>
-          <input type='text' className="form-control" id="user" name="user" value={this.state.user} onChange={this.handleChange}/>
-        </div>
           <div className="form-group">
             <label htmlFor="message">Message</label>
             <input type='text' className="form-control" id="message" name="message" value={this.state.message} onChange={this.handleChange}/>
